@@ -1,6 +1,6 @@
-use serde_json;
 use std::fs;
 use super::models::ReceiptEntry;
+use rocket::serde::json;
 
 const PATH_TO_RECEIPTS_FILE:&str = "test.json";
 
@@ -12,7 +12,7 @@ pub fn get_all_receipts() -> Option<Vec<ReceiptEntry>> {
             return None;
         },
         Ok(contents) => {
-            let json: Result<Vec<ReceiptEntry>, serde_json::Error> = serde_json::from_str(&contents);
+            let json: Result<Vec<ReceiptEntry>, json::serde_json::Error> = json::from_str(&contents);
             match json {
                 Err(e) => {
                     println!("{}", e);
@@ -26,7 +26,7 @@ pub fn get_all_receipts() -> Option<Vec<ReceiptEntry>> {
 
 
 pub fn write_receipt_file(receipts:&Vec<ReceiptEntry>) -> Result<(), std::io::Error> {
-    let contents = serde_json::to_string(receipts).unwrap();
+    let contents = json::to_string(receipts).unwrap();
     fs::write(PATH_TO_RECEIPTS_FILE, contents)?;
     Ok(())
 }

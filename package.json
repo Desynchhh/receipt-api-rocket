@@ -1,0 +1,23 @@
+{
+  "name": "receipt_api_rocket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Desynchhh/receipt-api-rocket.git"
+  },
+  "author": "Desynch",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Desynchhh/receipt-api-rocket/issues"
+  },
+  "homepage": "https://github.com/Desynchhh/receipt-api-rocket#readme",
+  "devDependencies": {
+    "typescript": "4.9.4"
+  }
+}

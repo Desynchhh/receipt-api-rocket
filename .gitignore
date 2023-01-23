@@ -1,4 +1,6 @@
 /target
+/node_modules
+/static/js/*
+Rocket.toml
 example.rs
 test.json
-Rocket.toml

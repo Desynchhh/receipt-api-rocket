@@ -5,8 +5,6 @@ use self::models::{ReceiptEntry, ErrorResponse, Receipt};
 mod models;
 mod utils;
 
-
-
 #[get("/")]
 fn get_receipts() -> Result<Json<Vec<ReceiptEntry>>, Json<ErrorResponse>> {
     match utils::get_all_receipts() {

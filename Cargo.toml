@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
-serde_json = "1.0.91"
+rocket_dyn_templates = { version = "0.1.0-rc.2", features = ["tera"] }
