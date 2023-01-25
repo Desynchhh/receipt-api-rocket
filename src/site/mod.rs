@@ -47,7 +47,7 @@ fn receipt(id: usize) -> Template {
 #[get("/receipts")]
 fn receipts() -> Template {
     let receipts:Vec<ReceiptEntry> = json::from_str(&fs::read_to_string("test.json").unwrap()).unwrap();
-    let context = HashMap::new().insert("receipts", receipts).unwrap();
+    let context = HashMap::new().insert("receipts", receipts);
     Template::render("receipts", context)
 }
 
