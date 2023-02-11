@@ -3,5 +3,7 @@
 /static/js/*
 Rocket.toml
 example.rs
-test.json
-BACKUP.json
+DATA BACKUP*.json
+data.json
+*.sqlite
+.env
