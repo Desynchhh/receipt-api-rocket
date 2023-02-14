@@ -1,6 +1,7 @@
 /target
 /node_modules
-/static/js/*
+/static/js/main.js
+/static/css/styles.css
 Rocket.toml
 example.rs
 DATA BACKUP*.json

@@ -1,4 +1,4 @@
-{% extends "base" %}
+{% extends "partials/base" %}
 {% block content %}
-    <h1>Hello, World!</h1>
+    <h1 class="text-3xl">Welcome to Budgeze!</h1>
 {% endblock content %}

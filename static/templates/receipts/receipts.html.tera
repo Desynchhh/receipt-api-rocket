@@ -1,4 +1,4 @@
-{% extends "base" %}
+{% extends "partials/base" %}
 
 {% block content %}
     <h1>Receipt Overview</h1>

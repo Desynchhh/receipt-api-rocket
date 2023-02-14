@@ -1,15 +1,17 @@
 use diesel::prelude::*;
 use chrono::NaiveDateTime;
+use rocket::serde::Serialize;
 use crate::schema::users;
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
+#[serde(crate = "rocket::serde", rename_all = "camelCase")]
 pub struct User {
     pub id: i32,
     pub email: String,
-    pub username: String,
-    pub display_name: String,
+    pub first_name: String,
+    pub last_name: String,
     pub password: String,
-    pub api_token: String,
+    pub api_token: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub is_deleted: bool,
@@ -19,7 +21,7 @@ pub struct User {
 #[diesel(table_name = users)]
 pub struct NewUser<'a> {
     pub email: &'a str,
-    pub username: &'a str,
-    pub display_name: &'a str,
+    pub first_name: &'a str,
+    pub last_name: &'a str,
     pub password: &'a str,
 }

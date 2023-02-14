@@ -1,4 +1,4 @@
-{% extends "base" %}
+{% extends "partials/base" %}
 
 {% block content %}
     <h1 id="{{ receipt.id }}">{{ receipt.store }} - {{ receipt.date }} - {{ receipt.subtotal | round(method="ceil", precision=2) }}</h1>

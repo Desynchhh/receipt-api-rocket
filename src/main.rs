@@ -3,6 +3,7 @@ use rocket_dyn_templates::Template;
 
 mod site;
 mod api;
+pub mod apiv2;
 pub mod schema;
 pub mod db;
 
@@ -30,8 +31,8 @@ fn create_test_users() {
 
     let new_user = user_models::NewUser {
         email: "testmail123@gmail.com",
-        username: "test_user",
-        display_name: "Test user",
+        first_name: "testFirst",
+        last_name: "testLast",
         password: "P@55w0rd!"
     };
     

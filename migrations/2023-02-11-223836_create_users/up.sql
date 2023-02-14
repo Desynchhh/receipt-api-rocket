@@ -2,8 +2,8 @@
 CREATE TABLE users (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     email VARCHAR NOT NULL,
-    username VARCHAR NOT NULL,
-    display_name VARCHAR NOT NULL,
+    first_name VARCHAR NOT NULL,
+    last_name VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
     api_token VARCHAR DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

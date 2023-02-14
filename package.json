@@ -4,8 +4,11 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "watch": "tsc --watch",
-    "build": "tsc"
+    "build-ts": "tsc",
+    "watch-ts": "tsc --watch",
+    "build-tw": "tailwind -i ./tailwind_src/input.css -o ./static/css/styles.css",
+    "watch-tw": "tailwind -i ./tailwind_src/input.css -o ./static/css/styles.css --watch",
+    "build": "npm run build-ts && npm run build-tw"
   },
   "repository": {
     "type": "git",
@@ -18,6 +21,7 @@
   },
   "homepage": "https://github.com/Desynchhh/receipt-api-rocket#readme",
   "devDependencies": {
+    "tailwindcss": "^3.2.6",
     "typescript": "4.9.4"
   }
 }

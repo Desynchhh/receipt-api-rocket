@@ -48,8 +48,8 @@ diesel::table! {
     users (id) {
         id -> Integer,
         email -> Text,
-        username -> Text,
-        display_name -> Text,
+        first_name -> Text,
+        last_name -> Text,
         password -> Text,
         api_token -> Nullable<Text>,
         created_at -> Timestamp,
