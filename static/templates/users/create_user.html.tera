@@ -1,6 +1,12 @@
 {% extends "partials/base" %}
-
 {% block content %}
+    {% if has_errors %}
+        <div class="text-red-500 bg-red-200 p-2">
+            {% for error in errors %}
+                <p>{{error}}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
     <legend class="text-3xl mb-3">Fill out the form to get started!</legend>
     <div class="flex justify-center w-auto">
         <form action="" method="post">

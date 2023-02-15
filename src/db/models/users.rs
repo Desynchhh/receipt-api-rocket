@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use rocket::serde::Serialize;
 use crate::schema::users;
 
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize, Debug)]
 #[serde(crate = "rocket::serde", rename_all = "camelCase")]
 pub struct User {
     pub id: i32,

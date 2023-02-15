@@ -18,3 +18,16 @@ pub fn create_new_user(new_user: NewUser) -> User {
         .first(connection)
         .expect("Error loading user after creation")
 }
+
+
+pub fn get_all_user_emails() -> Vec<String> {
+    let connection = &mut establish_connection();
+
+    let users = users::table
+    .select(users::email)
+    .load::<String>(connection);
+    match users {
+        Ok(all_users) => all_users,
+        Err(_) => vec![]
+    }
+}
