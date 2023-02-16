@@ -1,5 +1,9 @@
-use rocket::{ *, http::{ Cookie, CookieJar, Status }, request::{Outcome, FromRequest} };
-// use time::{Duration, OffsetDateTime};
+use rocket::{
+    *,
+    http::{ Cookie, CookieJar, Status },
+    request::{Outcome, FromRequest},
+    // time::{Duration, OffsetDateTime}
+};
 
 struct JwtCookie {
     // name: String,

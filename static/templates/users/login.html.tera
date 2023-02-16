@@ -16,4 +16,9 @@
             </div>
         </form>
     </div>
+    {% if flash_message %}
+        <div class="text-green-500 bg-green-200 p-2 mt-3">
+            <p>{{ flash_message }}</p>
+        </div>
+    {% endif %}
 {% endblock content %}
