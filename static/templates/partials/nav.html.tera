@@ -5,7 +5,7 @@
         </div>
         <div class="hidden sm:flex space-x-6">
             <a href="/users/create" class="hover:text-white">Sign Up</a>
-            <a href="#" class="hover:text-white">Sign In</a>
+            <a href="/users/login" class="hover:text-white">Sign In</a>
         </div>
     </div>
 </nav>
