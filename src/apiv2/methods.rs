@@ -1,6 +1,5 @@
-
 use diesel::prelude::*;
-use crate::schema::{users};
+use crate::schema::users;
 use crate::db::{
     establish_connection,
     models::users::{User, NewUser}

@@ -1,5 +1,4 @@
 use diesel::prelude::*;
-use chrono::NaiveDateTime;
 use crate::schema::user_friends;
 
 #[derive(Queryable)]
