@@ -10,7 +10,7 @@ use rocket_dyn_templates::{
 };
 use crate::apiv2;
 
-mod utils;
+pub mod utils;
 
 #[derive(FromForm)]
 pub struct UserRegisterForm<'r> {
@@ -82,9 +82,14 @@ fn user_login(form: Form<UserLoginForm<'_>>, cookies: &CookieJar<'_>) -> Result<
     }
 
     let jwt = utils::build_jwt_cookie(&user);
-    println!("{}", jwt.value());
     cookies.add_private(jwt);
     Ok(Redirect::to(uri!(super::index)))
+}
+
+#[get("/users/logout")]
+fn user_logout(cookies: &CookieJar<'_>) -> Redirect {
+    utils::remove_jwt_cookie(cookies);
+    Redirect::to(uri!("/"))
 }
 
 pub fn routes() -> Vec<rocket::Route> {
@@ -93,5 +98,6 @@ pub fn routes() -> Vec<rocket::Route> {
         create_user_post,
         login_screen,
         user_login,
+        user_logout,
     ]
 }

@@ -1,32 +1,44 @@
 use bcrypt;
+use chrono::Utc;
 use regex::Regex;
-use rocket::http::Cookie;
+use rocket::http::{Cookie, CookieJar};
 use rocket::serde::{Serialize, Deserialize};
-use rocket::time::{OffsetDateTime, Duration};
+use rocket::time::{OffsetDateTime, Duration, UtcOffset };
 use crate::apiv2;
 use crate::db::models::users::{NewUser, User};
 use super::UserRegisterForm;
 use super::super::JWT_COOKIE_NAME;
 use rocket::form::Form;
-use jsonwebtoken::{ encode, decode, Header, EncodingKey };
+use jsonwebtoken::{ encode, decode, Header, EncodingKey, DecodingKey, Algorithm, Validation, TokenData }; // HS256
 use std::env;
 use dotenvy::dotenv;
 
 const EMAIL_REGEX:&str = r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\..+$";
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 struct JwtUser<'u> {
     email: &'u str,
     password: &'u str,
+    exp: i64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct DecodedJwtUser {
+    pub email: String,
+    pub password: String,
+    pub exp: i64,
 }
 
 impl<'u> JwtUser<'u> {
     fn from_user(user: &'u User) -> Self {
+        let expiration = (chrono::Utc::now() + chrono::Duration::days(7)).timestamp();
         Self {
             email: &user.email,
-            password: &user.password
+            password: &user.password,
+            exp: expiration,
         }
     }
 }
@@ -88,15 +100,33 @@ pub fn build_jwt_cookie(user: &User) -> Cookie<'static> {
         .finish()
 }
 
+pub fn remove_jwt_cookie(cookies: &CookieJar<'_>) {
+    match cookies.get_private(JWT_COOKIE_NAME) {
+        Some(cookie) => cookies.remove_private(cookie),
+        None => ()
+    }
+}
+
 fn create_jwt(user: &User) -> String {
     dotenv().ok();
     let user = JwtUser::from_user(user);
     let secret = env::var("JWT_TOKEN_SECRET").expect("JWT_TOKEN_SECRET not set.");
     let jwt = encode(
-    &Header::default(),
-    &user,
-    &EncodingKey::from_secret(secret.as_ref())
+        &Header::default(),
+        &user,
+        &EncodingKey::from_secret(secret.as_ref())
     ).expect("Error in create_jwt");
-    println!("{}", jwt);
-    String::from("INSERT JWT HERE")
+    jwt
+}
+
+pub fn decode_jwt_str(jwt: &str) -> Result<TokenData<DecodedJwtUser>, jsonwebtoken::errors::Error> {
+    dotenv().ok();
+    let secret = env::var("JWT_TOKEN_SECRET").expect("JWT_TOKEN_SECRET not set.");
+    let mut validator = Validation::new(Algorithm::HS256);
+    validator.validate_exp = false;
+    return decode::<DecodedJwtUser>(
+        jwt,
+        &DecodingKey::from_secret(secret.as_ref()),
+        &validator
+    );
 }

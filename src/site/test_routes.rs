@@ -20,7 +20,6 @@ impl<'r> FromRequest<'r> for JwtCookie {
     type Error = JwtCookieError;
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        println!("headers: {:#?}", req.headers());
         match req.cookies().get_private("key") {
             None => Outcome::Failure((Status::Unauthorized, JwtCookieError::Missing)),
             Some(c) => {
