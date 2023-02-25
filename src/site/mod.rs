@@ -15,9 +15,10 @@ pub const JWT_COOKIE_NAME: &str = "receipt_management_jwt";
 fn index(cookies: &CookieJar<'_>) -> Template {
     let mut context = Context::new();
 
-    if let Some(_) = cookies.get_private(JWT_COOKIE_NAME) {
-        context.insert("logged_in", &true);
-    }
+    // if let Some(_) = cookies.get_private(JWT_COOKIE_NAME) {
+    //     context.insert("logged_in", &true);
+    // }
+    context.insert("logged_in", &true);
 
     context.insert("title", "Home");
     Template::render("index", context.into_json())
@@ -29,7 +30,6 @@ fn index_temp(jwt: JwtToken) -> Template {
     context.insert("title", "TEMP");
     Template::render("index", context.into_json())
 }
-
 
 
 pub fn routes() -> Vec<rocket::Route> {

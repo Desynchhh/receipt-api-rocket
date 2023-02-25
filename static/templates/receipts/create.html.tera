@@ -1,0 +1,5 @@
+{% extends "partials/base" %}
+
+{% block content %}
+    <h1>NYI</h1>
+{% endblock content %}

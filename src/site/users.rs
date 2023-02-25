@@ -33,7 +33,7 @@ pub struct UserLoginForm<'r> {
 }
 
 #[get("/users/create")]
-async fn create_user_get(flash: Option<FlashMessage<'_>>) -> Template {
+async fn create_get(flash: Option<FlashMessage<'_>>) -> Template {
     let mut context = Context::new();
     if let Some(flash_message) = flash.map(|msg| format!("{}", msg.message())) {
         context.insert("flash_message", &flash_message)
@@ -42,7 +42,7 @@ async fn create_user_get(flash: Option<FlashMessage<'_>>) -> Template {
 }
 
 #[post("/users/create", data = "<form>")]
-async fn create_user_post(form: Form<UserRegisterForm<'_>>,) -> Flash<Redirect> {
+async fn create_post(form: Form<UserRegisterForm<'_>>,) -> Flash<Redirect> {
     let errors = utils::validate_form_input(&form);
     if errors.len() > 0 {
         let mut error_string = String::new();
@@ -54,7 +54,7 @@ async fn create_user_post(form: Form<UserRegisterForm<'_>>,) -> Flash<Redirect> 
 
     let password = utils::encrypt_password(form.password);
     let new_user = utils::create_user_object(&form, &password);
-    let _ = apiv2::methods::create_new_user(new_user);
+    let _ = apiv2::methods::create_user(new_user);
 
     Flash::success(Redirect::to("/users/login"), "User created successfully! You can now log in.")
 }
@@ -70,8 +70,10 @@ fn login_screen(flash: Option<FlashMessage<'_>>) -> Template {
 }
 
 #[post("/users/login", data = "<form>")]
-fn user_login(form: Form<UserLoginForm<'_>>, cookies: &CookieJar<'_>) -> Result<Redirect, Flash<Redirect>> {
-    let user = apiv2::methods::get_user(form.email.to_string());
+fn login(form: Form<UserLoginForm<'_>>, cookies: &CookieJar<'_>) -> Result<Redirect, Flash<Redirect>> {
+    use apiv2::methods::{ get_user, UserGetMethod };
+    let user_email = UserGetMethod::Email(form.email.to_string());
+    let user = get_user(user_email);
     if let Err(err) = &user {
         return Err(Flash::error(Redirect::to("/users/login"), format!("Incorrect email or password. --- {}", err)));
     }
@@ -87,17 +89,17 @@ fn user_login(form: Form<UserLoginForm<'_>>, cookies: &CookieJar<'_>) -> Result<
 }
 
 #[get("/users/logout")]
-fn user_logout(cookies: &CookieJar<'_>) -> Redirect {
+fn logout(cookies: &CookieJar<'_>) -> Redirect {
     utils::remove_jwt_cookie(cookies);
     Redirect::to(uri!("/"))
 }
 
 pub fn routes() -> Vec<rocket::Route> {
     routes![
-        create_user_get,
-        create_user_post,
+        create_get,
+        create_post,
         login_screen,
-        user_login,
-        user_logout,
+        login,
+        logout,
     ]
 }

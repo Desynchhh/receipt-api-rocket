@@ -1,9 +1,8 @@
 use bcrypt;
-use chrono::Utc;
 use regex::Regex;
 use rocket::http::{Cookie, CookieJar};
 use rocket::serde::{Serialize, Deserialize};
-use rocket::time::{OffsetDateTime, Duration, UtcOffset };
+use rocket::time::{OffsetDateTime, Duration };
 use crate::apiv2;
 use crate::db::models::users::{NewUser, User};
 use super::UserRegisterForm;
