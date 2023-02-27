@@ -46,8 +46,12 @@ impl<'u> JwtUser<'u> {
 pub fn validate_form_input(form: &Form<UserRegisterForm>) -> Vec<String> {
     let mut errors: Vec<String> = Vec::new();
     
-    if !form.password.eq(form.confirm_password) {
-        errors.append(&mut vec!["Passwords do not match.".to_string()]);
+    if form.first_name.len() < 1 {
+        errors.append(&mut vec!["You must enter your first name to create an account.".to_string()]);
+    }
+
+    if form.last_name.len() < 1 {
+        errors.append(&mut vec!["You must enter your last name to create an account.".to_string()]);
     }
 
     let re = Regex::new(EMAIL_REGEX).unwrap();
@@ -60,12 +64,8 @@ pub fn validate_form_input(form: &Form<UserRegisterForm>) -> Vec<String> {
         errors.append(&mut vec!["An account with that email already exists.".to_string()]);
     }
 
-    if form.first_name.len() < 1 {
-        errors.append(&mut vec!["You must enter your first name to create an account.".to_string()]);
-    }
-
-    if form.last_name.len() < 1 {
-        errors.append(&mut vec!["You must enter your last name to create an account.".to_string()]);
+    if !form.password.eq(form.confirm_password) {
+        errors.append(&mut vec!["Passwords do not match.".to_string()]);
     }
 
     errors

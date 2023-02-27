@@ -11,7 +11,7 @@ use crate::db::{
     }
 };
 
-pub enum UserGetMethod {
+pub enum GetByField {
     Email(String),
     Id(i32)
 }
@@ -27,15 +27,15 @@ pub fn get_users() -> Vec<User> {
     }
 }
 
-pub fn get_user(identifier: UserGetMethod) -> Result<User, diesel::result::Error> {
+pub fn get_user(identifier: GetByField) -> Result<User, diesel::result::Error> {
     let connection = &mut establish_connection();
     let user = match identifier {
-        UserGetMethod::Email(email) => {
+        GetByField::Email(email) => {
             users::table
                 .filter(users::email.eq(email))
                 .first::<User>(connection)
         },
-        UserGetMethod::Id(id) => {
+        GetByField::Id(id) => {
             users::table
                 .filter(users::id.eq(id))
                 .first::<User>(connection)
