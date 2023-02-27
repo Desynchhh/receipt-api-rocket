@@ -1,17 +1,18 @@
 use diesel::prelude::*;
-use chrono::NaiveDate;
-use rocket::serde::Deserialize;
+use chrono::NaiveDateTime;
+use rocket::serde::{Deserialize, Serialize};
 use crate::schema::receipts;
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
+#[serde(crate = "rocket::serde")]
 pub struct Receipt {
     pub id: i32,
     pub user_id: i32,
     pub store: String,
-    pub date_bought: NaiveDate,
+    pub date_bought: NaiveDateTime,
     pub subtotal: f32,
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
     pub is_deleted: bool,
 }
 
@@ -30,7 +31,7 @@ pub struct NewReceipt {
 pub struct PostReceipt<'a>{
     pub user_id: &'a i32,
     pub store: &'a str,
-    pub date_bought: &'a str,
+    pub date_bought: &'a NaiveDateTime,
     pub subtotal: &'a f32,
 }
 
@@ -39,8 +40,8 @@ pub struct PostReceipt<'a>{
 pub struct UpdateReceipt {
     pub user_id: Option<i32>,
     pub store: Option<String>,
-    pub date_bought: Option<NaiveDate>,
+    pub date_bought: Option<NaiveDateTime>,
     pub subtotal: Option<f32>,
-    pub updated_at: Option<NaiveDate>,
+    pub updated_at: Option<NaiveDateTime>,
     pub is_deleted: Option<bool>,
 }

@@ -5,8 +5,8 @@ diesel::table! {
         id -> Integer,
         user_id -> Integer,
         item_id -> Integer,
-        created_at -> Date,
-        updated_at -> Date,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         is_deleted -> Bool,
     }
 }
@@ -17,8 +17,8 @@ diesel::table! {
         receipt_id -> Integer,
         price -> Float,
         discount -> Nullable<Float>,
-        created_at -> Date,
-        updated_at -> Date,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         is_deleted -> Bool,
     }
 }
@@ -28,10 +28,10 @@ diesel::table! {
         id -> Integer,
         user_id -> Integer,
         store -> Text,
-        date_bought -> Date,
+        date_bought -> Timestamp,
         subtotal -> Float,
-        created_at -> Date,
-        updated_at -> Date,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         is_deleted -> Bool,
     }
 }
@@ -52,8 +52,8 @@ diesel::table! {
         last_name -> Text,
         password -> Text,
         api_token -> Nullable<Text>,
-        created_at -> Date,
-        updated_at -> Date,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
         is_deleted -> Bool,
     }
 }
