@@ -1,9 +1,15 @@
 use rocket::{ *,
   form::{ FromForm, Form },
   http::CookieJar,
-  serde::{json::Json, Serialize}
+  serde::json::Json,
 }; 
-use crate::{apiv2, db::models::users::User};
+use crate::{
+  apiv2::{
+    self,
+    HttpPostResponse,
+  },
+  db::models::users::User,
+};
 
 pub mod utils;
 
@@ -23,13 +29,6 @@ pub struct UserRegisterForm<'r> {
   
   #[field(name = "passwordConfirm")]
   confirm_password: &'r str,
-}
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-enum HttpPostResponse<S, F> {
-  Success(S),
-  Failure(F)
 }
 
 #[derive(FromForm)]

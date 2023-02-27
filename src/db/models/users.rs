@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use chrono::NaiveDateTime;
+use chrono::NaiveDate;
 use rocket::serde::Serialize;
 use crate::schema::users;
 
@@ -12,8 +12,8 @@ pub struct User {
     pub last_name: String,
     pub password: String,
     pub api_token: Option<String>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
     pub is_deleted: bool,
 }
 

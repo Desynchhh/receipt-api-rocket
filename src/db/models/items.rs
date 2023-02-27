@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use chrono::NaiveDateTime;
+use chrono::NaiveDate;
 use crate::schema::items;
 
 #[derive(Queryable)]
@@ -8,8 +8,8 @@ pub struct Item {
     pub receipt_id: i32,
     pub price: f32,
     pub discount: Option<f32>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
     pub is_deleted: bool,
 }
 
