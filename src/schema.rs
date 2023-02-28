@@ -15,6 +15,7 @@ diesel::table! {
     items (id) {
         id -> Integer,
         receipt_id -> Integer,
+        product -> Text,
         price -> Float,
         discount -> Nullable<Float>,
         created_at -> Timestamp,

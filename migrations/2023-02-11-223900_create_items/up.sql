@@ -2,6 +2,7 @@
 CREATE TABLE items(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     receipt_id INTEGER NOT NULL REFERENCES receipts (id),
+    product TEXT NOT NULL,
     price FLOAT NOT NULL,
     discount FLOAT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
