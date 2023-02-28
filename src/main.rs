@@ -10,5 +10,5 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/receipts/api", api::routes())
         .mount("/apiv2", apiv2::routes())
-        .attach(apiv2::CORS)
+        .attach(apiv2::fairing::CORS)
 }

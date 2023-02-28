@@ -14,7 +14,15 @@ pub struct ItemContributor {
 
 #[derive(Insertable)]
 #[diesel(table_name = item_contributors)]
-pub struct NewItemContributor {
-    pub user_id: i32,
-    pub item_id: i32,
+pub struct NewItemContributor<'a> {
+    pub user_id: &'a i32,
+    pub item_id: &'a i32,
+}
+
+#[derive(AsChangeset)]
+#[diesel(table_name = item_contributors)]
+pub struct UpdateItemContributor {
+    pub user_id: Option<i32>,
+    pub item_id: Option<i32>,
+    pub is_deleted: Option<bool>
 }
