@@ -13,7 +13,7 @@ use crate::apiv2::{
 
 // Request guards
 pub struct JwtToken {
-  email: String,
+  pub email: String,
   password: String,
   exp: i64,
 }

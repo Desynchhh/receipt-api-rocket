@@ -2,7 +2,7 @@ use std::fs;
 use super::models::ReceiptEntry;
 use rocket::serde::json;
 
-const PATH_TO_RECEIPTS_FILE:&str = "test.json";
+const PATH_TO_RECEIPTS_FILE:&str = "receipts.json";
 
 pub fn get_all_receipts() -> Option<Vec<ReceiptEntry>> {
     let file_contents = fs::read_to_string(PATH_TO_RECEIPTS_FILE);

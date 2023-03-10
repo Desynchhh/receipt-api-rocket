@@ -17,16 +17,16 @@ use super::{
 
 mod utils;
 
-
 #[post("/receipts/create", data = "<receipt>")]
-//_jwt:JwtToken, 
-fn create(receipt:Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::models::receipts::Receipt, String>> {
+// jwt:JwtToken,
+fn create(receipt: Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::models::receipts::Receipt, String>> {
   let receipt = receipt.into_inner();
-
+  // let logged_in_user = methods::get_user(methods::GetByField::Email(jwt.email)).unwrap();
+  let logged_in_user = methods::get_user(methods::GetByField::Email("mikkellarsen939@gmail.com".to_string())).unwrap();
   let subtotal = utils::calc_subtotal(&receipt.items);
 
   let new_receipt = PostReceipt {
-    user_id: &receipt.user_id,
+    user_id: &logged_in_user.id,
     store: &receipt.store,
     date_bought: &receipt.date,
     subtotal: &subtotal
@@ -38,8 +38,6 @@ fn create(receipt:Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::mo
     return Json::from(HttpPostResponse::Failure(format!("Something went wrong during receipt creation.\n {}", e)))
   }
   let created_receipt = created_receipt.unwrap();
-
-  println!("{:?}", receipt.items);
 
   let mut new_items: Vec<NewItem> = Vec::new();
   for item in &receipt.items {
@@ -75,10 +73,9 @@ fn create(receipt:Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::mo
   Json::from(HttpPostResponse::Success(created_receipt))
 }
 
-
 pub fn routes() -> Vec<rocket::Route> {
   routes![
-    create
+    create,
   ]
 }
 
@@ -102,7 +99,5 @@ fn default_discount() -> f32 {
 pub struct NewReceiptObject {
   store: String,
   date: NaiveDateTime,
-  user_id: i32,
   items: Vec<NewItemObject>,
-  subtotal: f32,
 }
