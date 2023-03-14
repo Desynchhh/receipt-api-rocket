@@ -1,6 +1,6 @@
 use rocket::{
   *,
-  serde::{self, Serialize}
+  serde::Serialize
 };
 
 pub mod methods;

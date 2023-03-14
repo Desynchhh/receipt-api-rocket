@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use chrono::NaiveDateTime;
-use rocket::serde::{Deserialize, Serialize};
+use rocket::serde::Serialize;
 use crate::schema::receipts;
 
 #[derive(Queryable, Serialize)]
@@ -14,16 +14,6 @@ pub struct Receipt {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub is_deleted: bool,
-}
-
-#[derive(Insertable, Deserialize, Debug)]
-#[diesel(table_name=receipts)]
-#[serde(crate = "rocket::serde", rename_all = "camelCase")]
-pub struct NewReceipt {
-    pub user_id: i32,
-    pub store: String,
-    pub date_bought: String,
-    pub subtotal: f32,
 }
 
 #[derive(Insertable)]

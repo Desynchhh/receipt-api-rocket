@@ -12,19 +12,22 @@ use crate::apiv2::{
 };
 
 // Request guards
+#[derive(Debug)]
 pub struct JwtToken {
+  pub id: i32,
   pub email: String,
-  password: String,
-  exp: i64,
+  // password: String,
+  // exp: i64,
 }
 
 impl JwtToken {
   fn from_jwt(jwt:DecodedJwtUser) -> Self {
-      Self {
-          email: jwt.email,
-          password: jwt.password,
-          exp: jwt.exp
-      }
+    Self {
+        id: jwt.id,
+        email: jwt.email,
+        // password: jwt.password,
+        // exp: jwt.exp
+    }
   }
 }
 

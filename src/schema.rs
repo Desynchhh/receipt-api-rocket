@@ -42,6 +42,7 @@ diesel::table! {
         id -> Integer,
         user_id -> Integer,
         friend_id -> Integer,
+        request_accepted -> Bool,
     }
 }
 

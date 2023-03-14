@@ -18,11 +18,9 @@ use super::{
 mod utils;
 
 #[post("/receipts/create", data = "<receipt>")]
-// jwt:JwtToken,
-fn create(receipt: Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::models::receipts::Receipt, String>> {
+fn create(jwt:JwtToken, receipt: Json<NewReceiptObject>) -> Json<HttpPostResponse<crate::db::models::receipts::Receipt, String>> {
   let receipt = receipt.into_inner();
-  // let logged_in_user = methods::get_user(methods::GetByField::Email(jwt.email)).unwrap();
-  let logged_in_user = methods::get_user(methods::GetByField::Email("mikkellarsen939@gmail.com".to_string())).unwrap();
+  let logged_in_user = methods::get_user(methods::GetByField::Email(jwt.email)).unwrap();
   let subtotal = utils::calc_subtotal(&receipt.items);
 
   let new_receipt = PostReceipt {

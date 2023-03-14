@@ -18,6 +18,7 @@ const EMAIL_REGEX:&str = r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\..+$";
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 struct JwtUser<'u> {
+    id: &'u i32,
     email: &'u str,
     password: &'u str,
     exp: i64,
@@ -26,6 +27,7 @@ struct JwtUser<'u> {
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct DecodedJwtUser {
+    pub id: i32,
     pub email: String,
     pub password: String,
     pub exp: i64,
@@ -35,6 +37,7 @@ impl<'u> JwtUser<'u> {
     fn from_user(user: &'u User) -> Self {
         let expiration = (chrono::Utc::now() + chrono::Duration::days(7)).timestamp();
         Self {
+            id: &user.id,
             email: &user.email,
             password: &user.password,
             exp: expiration,

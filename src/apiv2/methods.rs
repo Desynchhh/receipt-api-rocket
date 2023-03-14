@@ -7,7 +7,7 @@ use crate::db::{
         users::{ User, NewUser },
         items::{ Item, NewItem, UpdateItem },
         item_contributors::{ ItemContributor, NewItemContributor },
-        receipts::{ Receipt, NewReceipt, PostReceipt, UpdateReceipt },
+        receipts::{ Receipt, PostReceipt, UpdateReceipt },
         user_friends::{ UserFriend, NewUserFriend },
     }
 };
@@ -239,11 +239,11 @@ pub fn get_contributor(id: i32) -> Result<ItemContributor, diesel::result::Error
     Ok(contributor.unwrap())
 }
 
-pub fn create_friend(new_friend: NewUserFriend) -> Result<UserFriend, diesel::result::Error> {
+pub fn create_friend(new_user_friend: NewUserFriend) -> Result<UserFriend, diesel::result::Error> {
     let connection = &mut establish_connection();
 
     let user_friend: UserFriend = diesel::insert_into(user_friends::table)
-        .values(&new_friend)
+        .values(&new_user_friend)
         .get_result(connection)?;
 
     Ok(user_friend)
@@ -259,7 +259,7 @@ pub fn delete_friend(id: i32) -> bool {
     }
 }
 
-pub fn get_friend(user_id: i32, friend_id: i32) -> Result<UserFriend, diesel::result::Error> {
+pub fn get_friend(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::result::Error> {
     let connection = &mut establish_connection();
     
     let friend = user_friends::table
@@ -272,14 +272,25 @@ pub fn get_friend(user_id: i32, friend_id: i32) -> Result<UserFriend, diesel::re
     Ok(friend.unwrap())
 }
 
-pub fn get_friends(user_id: i32) -> Result<Vec<UserFriend>, diesel::result::Error> {
+pub fn get_friends(user_id: &i32) -> Result<Vec<UserFriend>, diesel::result::Error> {
     let connection = &mut establish_connection();
     
     let friends = user_friends::table
         .filter(user_friends::user_id.eq(user_id))
+        .or_filter(user_friends::user_id.eq(user_id))
         .load::<UserFriend>(connection);
     if let Err(err) = friends {
         return Err(err);
     }
     Ok(friends.unwrap())
+}
+
+pub fn set_friend_status(user_id:i32, friend_id:i32, request_state:bool) -> Result<UserFriend, diesel::result::Error> {
+    let connection = &mut establish_connection();
+    
+    diesel::update(user_friends::table)
+        .filter(user_friends::user_id.eq(user_id))
+        .filter(user_friends::friend_id.eq(friend_id))
+        .set(user_friends::request_accepted.eq(request_state))
+        .get_result(connection)
 }
