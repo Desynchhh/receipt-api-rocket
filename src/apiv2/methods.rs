@@ -1,12 +1,11 @@
 use diesel::prelude::*;
-use crate::db::models::item_contributors::UpdateItemContributor;
 use crate::schema::{ users, items, item_contributors, receipts, user_friends };
 use crate::db::{
     establish_connection,
     models::{
-        users::{ User, NewUser },
+        users::{ User, NewUser, FriendDetails },
         items::{ Item, NewItem, UpdateItem },
-        item_contributors::{ ItemContributor, NewItemContributor },
+        item_contributors::{ ItemContributor, NewItemContributor, UpdateItemContributor },
         receipts::{ Receipt, PostReceipt, UpdateReceipt },
         user_friends::{ UserFriend, NewUserFriend },
     }
@@ -249,10 +248,14 @@ pub fn create_friend(new_user_friend: NewUserFriend) -> Result<UserFriend, diese
     Ok(user_friend)
 }
 
-pub fn delete_friend(id: i32) -> bool {
+pub fn delete_friend(user_id: &i32, friend_id: &i32) -> bool {
     let connection = &mut establish_connection();
 
-    let rows_affeced = diesel::delete(user_friends::table.filter(user_friends::id.eq(id))).execute(connection);
+    let rows_affeced:Result<usize, diesel::result::Error> = diesel::delete(user_friends::table)
+        .filter(user_friends::friend_id.eq(user_id))
+        .filter(user_friends::user_id.eq(friend_id))
+        .filter(user_friends::request_accepted.eq(false))
+        .execute(connection);
     match rows_affeced {
         Ok(_num) => true,
         Err(_) => false
@@ -261,36 +264,38 @@ pub fn delete_friend(id: i32) -> bool {
 
 pub fn get_friend(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::result::Error> {
     let connection = &mut establish_connection();
+
     
-    let friend = user_friends::table
-        .filter(user_friends::user_id.eq(user_id))
-        .filter(user_friends::friend_id.eq(friend_id))
-        .first::<UserFriend>(connection);
-    if let Err(err) = friend {
-        return Err(err);
-    }
-    Ok(friend.unwrap())
+    user_friends::table
+        .filter(user_friends::friend_id.eq(friend_id).or(user_friends::user_id.eq(friend_id)))
+        .filter(user_friends::friend_id.eq(user_id).or(user_friends::user_id.eq(user_id)))
+        .filter(user_friends::request_accepted.eq(true))
+        .first::<UserFriend>(connection)
 }
 
-pub fn get_friends(user_id: &i32) -> Result<Vec<UserFriend>, diesel::result::Error> {
+pub fn get_friends(user_id: &i32) -> Result<Vec<FriendDetails>, diesel::result::Error> {
     let connection = &mut establish_connection();
     
-    let friends = user_friends::table
-        .filter(user_friends::user_id.eq(user_id))
-        .or_filter(user_friends::user_id.eq(user_id))
-        .load::<UserFriend>(connection);
-    if let Err(err) = friends {
-        return Err(err);
-    }
-    Ok(friends.unwrap())
+    users::table
+        .inner_join(user_friends::table
+            .on(user_friends::user_id.eq(users::id)
+                .or(user_friends::friend_id.eq(users::id))
+            )
+        )
+        .filter(user_friends::friend_id.eq(user_id)
+            .or(user_friends::user_id.eq(user_id))
+        )
+        .filter(user_friends::request_accepted.eq(true))
+        .select((users::id, users::email, users::first_name, users::last_name))
+        .load::<FriendDetails>(connection)
 }
 
-pub fn set_friend_status(user_id:i32, friend_id:i32, request_state:bool) -> Result<UserFriend, diesel::result::Error> {
+pub fn accept_friend_request(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::result::Error> {
     let connection = &mut establish_connection();
     
     diesel::update(user_friends::table)
-        .filter(user_friends::user_id.eq(user_id))
-        .filter(user_friends::friend_id.eq(friend_id))
-        .set(user_friends::request_accepted.eq(request_state))
+        .filter(user_friends::friend_id.eq(user_id))
+        .filter(user_friends::user_id.eq(friend_id))
+        .set(user_friends::request_accepted.eq(true))
         .get_result(connection)
 }

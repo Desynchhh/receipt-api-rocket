@@ -25,3 +25,13 @@ pub struct NewUser<'a> {
     pub last_name: &'a str,
     pub password: &'a str,
 }
+
+#[derive(Queryable, Serialize, Debug)]
+#[serde(crate = "rocket::serde", rename_all = "camelCase")]
+#[diesel(table_name = users)]
+pub struct FriendDetails {
+    pub id: i32,
+    email: String,
+    first_name: String,
+    last_name: String,
+}
