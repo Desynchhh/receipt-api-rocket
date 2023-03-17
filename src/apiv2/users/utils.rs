@@ -20,6 +20,8 @@ const EMAIL_REGEX:&str = r"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\..+$";
 struct JwtUser<'u> {
     id: &'u i32,
     email: &'u str,
+    first_name: &'u str,
+    last_name: &'u str,
     password: &'u str,
     exp: i64,
 }
@@ -29,6 +31,8 @@ struct JwtUser<'u> {
 pub struct DecodedJwtUser {
     pub id: i32,
     pub email: String,
+    pub first_name: String,
+    pub last_name: String,
     pub password: String,
     pub exp: i64,
 }
@@ -39,6 +43,8 @@ impl<'u> JwtUser<'u> {
         Self {
             id: &user.id,
             email: &user.email,
+            first_name: &user.first_name,
+            last_name: &user.last_name,
             password: &user.password,
             exp: expiration,
         }

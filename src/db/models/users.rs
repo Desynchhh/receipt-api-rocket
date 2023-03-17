@@ -1,7 +1,8 @@
-use diesel::prelude::*;
-use chrono::NaiveDateTime;
-use rocket::serde::Serialize;
+use crate::apiv2::request_guard::JwtToken;
 use crate::schema::users;
+use chrono::NaiveDateTime;
+use diesel::prelude::*;
+use rocket::serde::Serialize;
 
 #[derive(Queryable, Serialize, Debug)]
 #[serde(crate = "rocket::serde", rename_all = "camelCase")]
@@ -29,9 +30,29 @@ pub struct NewUser<'a> {
 #[derive(Queryable, Serialize, Debug)]
 #[serde(crate = "rocket::serde", rename_all = "camelCase")]
 #[diesel(table_name = users)]
-pub struct FriendDetails {
+pub struct UserDetails {
     pub id: i32,
     email: String,
     first_name: String,
     last_name: String,
+}
+
+impl UserDetails {
+	pub fn new(id: i32, email: String, first_name: String, last_name: String) -> Self {
+		Self {
+			id,
+			email,
+			first_name,
+			last_name,
+		}
+	}
+
+	pub fn from_jwt(jwt: JwtToken) -> Self {
+		Self {
+			id: jwt.id,
+			email: jwt.email,
+			first_name: jwt.first_name,
+			last_name: jwt.last_name,
+		}
+	}
 }

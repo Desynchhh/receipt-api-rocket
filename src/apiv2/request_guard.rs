@@ -16,6 +16,8 @@ use crate::apiv2::{
 pub struct JwtToken {
   pub id: i32,
   pub email: String,
+  pub first_name: String,
+  pub last_name: String,
   // password: String,
   // exp: i64,
 }
@@ -25,6 +27,8 @@ impl JwtToken {
     Self {
         id: jwt.id,
         email: jwt.email,
+        first_name: jwt.first_name,
+        last_name: jwt.last_name,
         // password: jwt.password,
         // exp: jwt.exp
     }

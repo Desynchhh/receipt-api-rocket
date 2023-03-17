@@ -3,7 +3,7 @@ use crate::schema::{ users, items, item_contributors, receipts, user_friends };
 use crate::db::{
     establish_connection,
     models::{
-        users::{ User, NewUser, FriendDetails },
+        users::{ User, NewUser, UserDetails },
         items::{ Item, NewItem, UpdateItem },
         item_contributors::{ ItemContributor, NewItemContributor, UpdateItemContributor },
         receipts::{ Receipt, PostReceipt, UpdateReceipt },
@@ -273,21 +273,22 @@ pub fn get_friend(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::
         .first::<UserFriend>(connection)
 }
 
-pub fn get_friends(user_id: &i32) -> Result<Vec<FriendDetails>, diesel::result::Error> {
+pub fn get_friends(user_id: &i32) -> Result<Vec<UserDetails>, diesel::result::Error> {
     let connection = &mut establish_connection();
     
-    let friends: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
+    let friends: Result<Vec<UserDetails>, diesel::result::Error> = users::table
         .inner_join(user_friends::table
             .on(user_friends::user_id.eq(users::id)
                 .or(user_friends::friend_id.eq(users::id))
             )
         )
-        .filter(user_friends::friend_id.eq(user_id))
-        .or_filter(user_friends::user_id.eq(user_id))
+        .filter(users::id.ne(user_id))
+        .filter(user_friends::friend_id.eq(user_id)
+            .or(user_friends::user_id.eq(user_id))
+        )
         .filter(user_friends::request_accepted.eq(true))
         .select((users::id, users::email, users::first_name, users::last_name))
-        .load::<FriendDetails>(connection);
-
+        .load::<UserDetails>(connection);
 
     if friends.is_ok() {
         let f = friends.as_ref().unwrap();
@@ -316,17 +317,17 @@ pub fn accept_friend_request(user_id: &i32, friend_id: &i32) -> Result<UserFrien
         .get_result(connection)
 }
 
-pub fn get_pending_friend_requests(user_id: &i32) -> Result<Vec<FriendDetails>, diesel::result::Error> {
+pub fn get_pending_friend_requests(user_id: &i32) -> Result<Vec<UserDetails>, diesel::result::Error> {
     let connection = &mut establish_connection();
 
-    let friend_requests: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
+    let friend_requests: Result<Vec<UserDetails>, diesel::result::Error> = users::table
         .inner_join(user_friends::table
             .on(user_friends::user_id.eq(users::id))
         )
         .filter(user_friends::friend_id.eq(user_id))
         .filter(user_friends::request_accepted.eq(false))
         .select((users::id, users::email, users::first_name, users::last_name))
-        .load::<FriendDetails>(connection);
+        .load::<UserDetails>(connection);
 
     friend_requests
 }
