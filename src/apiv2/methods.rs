@@ -295,10 +295,10 @@ pub fn get_friends(user_id: &i32) -> Result<Vec<UserDetails>, diesel::result::Er
         let has_friends = f.len() > 0;
 
         if !has_friends {
-            let user: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
+            let user: Result<Vec<UserDetails>, diesel::result::Error> = users::table
                 .filter(users::id.eq(user_id))
                 .select((users::id, users::email, users::first_name, users::last_name))
-                .load::<FriendDetails>(connection);
+                .load::<UserDetails>(connection);
             return user;
         }
     }
