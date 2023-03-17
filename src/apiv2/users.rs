@@ -1,9 +1,7 @@
-use std::collections::HashMap;
-
 use crate::{
   apiv2::{self, HttpPostResponse},
   db::models::{
-    user_friends::NewUserFriend,
+    user_friends::{NewUserFriend, FriendRequestResponse, FriendRequest},
     users::{ User, FriendDetails }
   },
 };
@@ -99,12 +97,12 @@ fn logout(cookies: &CookieJar<'_>) -> Json<HttpPostResponse<bool, bool>> {
 #[post("/users/add-friend", data = "<friend_info>")]
 fn add_friend(
     jwt: JwtToken,
-    friend_info: Json<HashMap<String, String>>,
+    friend_info: Json<FriendRequest>,
 ) -> Json<HttpPostResponse<String, String>> {
     let friend_info = friend_info.into_inner();
     println!("{:?}", &friend_info);
     let friend = get_user(GetByField::Email(
-        friend_info.get("email").unwrap().to_string(),
+        friend_info.email.to_string(),
     ));
     if friend.is_err() {
         return Json::from(HttpPostResponse::Failure(format!(
@@ -133,17 +131,20 @@ fn add_friend(
     ))
 }
 
-#[post("/users/friend-request-response/<friend_id>/<response>")]
-fn accept_friend_request(jwt: JwtToken, friend_id: i32, response: bool) -> Json<HttpPostResponse<String, String>> {
-  let friend = get_user(GetByField::Id(friend_id.clone()));
+#[post("/users/friend-request-response", data = "<response>")]
+fn accept_friend_request(jwt: JwtToken, response: Json<FriendRequestResponse>) -> Json<HttpPostResponse<String, String>> {
+  let response = response.into_inner();
+  let friend = get_user(GetByField::Email(response.email.to_string()));
   if friend.is_err() {
-    apiv2::methods::delete_friend(&jwt.id, &friend_id);
+    // TODO: Delete the friend request if the friend doesn't exist (this should theoretically never happen, unless a user has been deleted)
+    // apiv2::methods::delete_friend(&jwt.id, &friend_id);
     return Json::from(HttpPostResponse::Failure("User not found.".to_string()));
   }
+  let friend = friend.unwrap();
 
-  match response {
+  match response.reply {
     true => {
-      let accept_is_successful = apiv2::methods::accept_friend_request(&jwt.id, &friend_id);
+      let accept_is_successful = apiv2::methods::accept_friend_request(&jwt.id, &friend.id);
       if accept_is_successful.is_err() {
         return Json::from(HttpPostResponse::Failure("Could not accept friend request.".to_string()));
       }
@@ -151,8 +152,8 @@ fn accept_friend_request(jwt: JwtToken, friend_id: i32, response: bool) -> Json<
       return Json::from(HttpPostResponse::Success("Friend request accepted!".to_string()));
     },
     false => {
-      let accept_is_successful = apiv2::methods::delete_friend(&jwt.id, &friend_id);
-      if !accept_is_successful {
+      let deny_is_successful = apiv2::methods::delete_friend(&jwt.id, &friend.id);
+      if !deny_is_successful {
         return Json::from(HttpPostResponse::Failure("Could not delete friend request.".to_string()));
       }
 
@@ -174,6 +175,17 @@ fn get_friends(jwt: JwtToken) -> Json<Vec<FriendDetails>> {
   Json::from(friends)
 }
 
+#[get("/users/pending-requests")]
+fn get_pending_requests(jwt: JwtToken) -> Json<Vec<FriendDetails>> {
+  let friend_requests = apiv2::methods::get_pending_friend_requests(&jwt.id);
+
+  if friend_requests.is_err() {
+    return Json::from(Vec::new());
+  }
+
+  Json::from(friend_requests.unwrap())
+}
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
       create,
@@ -181,6 +193,7 @@ pub fn routes() -> Vec<rocket::Route> {
       logout,
       add_friend,
       accept_friend_request,
-      get_friends
+      get_pending_requests,
+      get_friends,
     ]
 }

@@ -1,5 +1,5 @@
 use diesel::prelude::*;
-use rocket::serde::Serialize;
+use rocket::serde::{ Deserialize, Serialize };
 use crate::schema::user_friends;
 
 #[derive(Debug, Queryable, Serialize)]
@@ -17,4 +17,17 @@ pub struct UserFriend {
 pub struct NewUserFriend {
     pub user_id: i32,
     pub friend_id: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct FriendRequestResponse<'a> {
+    pub email: &'a str,
+    pub reply: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct FriendRequest<'a> {
+    pub email: &'a str,
 }

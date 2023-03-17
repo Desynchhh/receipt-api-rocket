@@ -276,18 +276,34 @@ pub fn get_friend(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::
 pub fn get_friends(user_id: &i32) -> Result<Vec<FriendDetails>, diesel::result::Error> {
     let connection = &mut establish_connection();
     
-    users::table
+    let friends: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
         .inner_join(user_friends::table
             .on(user_friends::user_id.eq(users::id)
                 .or(user_friends::friend_id.eq(users::id))
             )
         )
-        .filter(user_friends::friend_id.eq(user_id)
-            .or(user_friends::user_id.eq(user_id))
-        )
+        .filter(user_friends::friend_id.eq(user_id))
+        .or_filter(user_friends::user_id.eq(user_id))
         .filter(user_friends::request_accepted.eq(true))
         .select((users::id, users::email, users::first_name, users::last_name))
-        .load::<FriendDetails>(connection)
+        .load::<FriendDetails>(connection);
+
+
+    if friends.is_ok() {
+        let f = friends.as_ref().unwrap();
+        let has_friends = f.len() > 0;
+
+        if !has_friends {
+            let user: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
+                .filter(users::id.eq(user_id))
+                .select((users::id, users::email, users::first_name, users::last_name))
+                .load::<FriendDetails>(connection);
+            return user;
+        }
+    }
+
+    friends
+
 }
 
 pub fn accept_friend_request(user_id: &i32, friend_id: &i32) -> Result<UserFriend, diesel::result::Error> {
@@ -298,4 +314,19 @@ pub fn accept_friend_request(user_id: &i32, friend_id: &i32) -> Result<UserFrien
         .filter(user_friends::user_id.eq(friend_id))
         .set(user_friends::request_accepted.eq(true))
         .get_result(connection)
+}
+
+pub fn get_pending_friend_requests(user_id: &i32) -> Result<Vec<FriendDetails>, diesel::result::Error> {
+    let connection = &mut establish_connection();
+
+    let friend_requests: Result<Vec<FriendDetails>, diesel::result::Error> = users::table
+        .inner_join(user_friends::table
+            .on(user_friends::user_id.eq(users::id))
+        )
+        .filter(user_friends::friend_id.eq(user_id))
+        .filter(user_friends::request_accepted.eq(false))
+        .select((users::id, users::email, users::first_name, users::last_name))
+        .load::<FriendDetails>(connection);
+
+    friend_requests
 }
